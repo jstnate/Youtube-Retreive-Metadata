@@ -10,8 +10,18 @@
 </head>
 </head>
 <body>
-    <div class="main-box">
-        <h1>Retrieve metadata from a YouTube video</h1>
+    <div class="main-box" id="password-box">
+        <h2>Enter the password to get access</h2>
+        <div class="error-box" id="error-box">
+            <h3>Wrong password !</h3>
+        </div>
+        <div class="input-wrapper">
+            <input type="password" id="password" placeholder="Enter the password">
+        </div>
+        <button id="submit-password">Get Access</button>
+    </div>
+    <div class="main-box" id="main-box">
+        <h2>Retrieve metadata from a YouTube video</h2>
         <div class="input-wrapper">
             <input type="text" id="video-ids" placeholder="Enter the video IDs">
         </div>

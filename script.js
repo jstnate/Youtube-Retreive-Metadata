@@ -2,6 +2,10 @@ const API_KEY = "AIzaSyAGIJpkJ2Q0OEgZcOIA-nDnDYsOqYNWygA";
 const VIDEO_IDS_INPUT = document.getElementById("video-ids");
 const START_SCRIPT = document.getElementById("start-script");
 
+const PASSWORD = "ViveLaSacem+1851"
+const PASSWORD_INPUT = document.getElementById("password");
+const CHECK_PASSWORD = document.getElementById("submit-password");
+
 function fetchVideoData(VIDEO_ID) {
   const API_URL = `https://www.googleapis.com/youtube/v3/videos?id=${VIDEO_ID}&part=snippet,statistics,contentDetails&key=${API_KEY}`;
 
@@ -78,6 +82,21 @@ function createXLSX(videoDataList) {
   XLSX.utils.book_append_sheet(wb, ws, ws_name);
   XLSX.writeFile(wb, `youtube-videos-data.xlsx`);
 }
+
+function checkPassword(input) {
+  const passwordBox = document.getElementById("password-box");
+  const mainBox = document.getElementById("main-box");
+  const errorBox = document.getElementById("error-box");
+
+  if (input === PASSWORD) {
+    passwordBox.style.display = "none";
+    mainBox.style.display = "flex";
+  } else {
+    errorBox.style.display = "block";
+  }
+}
+
+CHECK_PASSWORD.addEventListener("click", () => checkPassword(PASSWORD_INPUT.value));
 
 START_SCRIPT.addEventListener("click", () => {
   const videoIds = VIDEO_IDS_INPUT.value.split(" ");
