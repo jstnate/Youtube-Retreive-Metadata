@@ -2,7 +2,7 @@
 This shortcode can help you getting metadata from one or few youtube videos
 
 # How to use it
-- Go on the [webpage](#)
+- Go on the [webpage](https://jstnate.github.io/Youtube-Retreive-Metadata/)
 - Write the ids of video that you want to retrieve metadata
 - Then click on the button and accept downloads notification
 
