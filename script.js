@@ -6,6 +6,10 @@ const PASSWORD = "ViveLaSacem+1851"
 const PASSWORD_INPUT = document.getElementById("password");
 const CHECK_PASSWORD = document.getElementById("submit-password");
 
+const passwordBox = document.getElementById("password-box");
+const mainBox = document.getElementById("main-box");
+const errorBox = document.getElementById("error-box");
+
 function fetchVideoData(VIDEO_ID) {
   const API_URL = `https://www.googleapis.com/youtube/v3/videos?id=${VIDEO_ID}&part=snippet,statistics,contentDetails&key=${API_KEY}`;
 
@@ -84,10 +88,6 @@ function createXLSX(videoDataList) {
 }
 
 function checkPassword(input) {
-  const passwordBox = document.getElementById("password-box");
-  const mainBox = document.getElementById("main-box");
-  const errorBox = document.getElementById("error-box");
-
   if (input === PASSWORD) {
     passwordBox.style.display = "none";
     mainBox.style.display = "flex";
@@ -98,15 +98,21 @@ function checkPassword(input) {
 
 CHECK_PASSWORD.addEventListener("click", () => checkPassword(PASSWORD_INPUT.value));
 
-START_SCRIPT.addEventListener("click", () => {
-  const videoIds = VIDEO_IDS_INPUT.value.split(" ");
-  const videoDataPromises = videoIds.map((videoId) => fetchVideoData(videoId));
 
-  Promise.all(videoDataPromises)
-    .then((videoDataList) => {
-      createXLSX(videoDataList);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+START_SCRIPT.addEventListener("click", () => {
+  if (PASSWORD_INPUT.value === PASSWORD) {
+    const videoIds = VIDEO_IDS_INPUT.value.split(" ");
+    const videoDataPromises = videoIds.map((videoId) => fetchVideoData(videoId));
+  
+    Promise.all(videoDataPromises)
+      .then((videoDataList) => {
+        createXLSX(videoDataList);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  } else {
+    passwordBox.style.display = "flex";
+    mainBox.style.display = "none";
+  }
 });
