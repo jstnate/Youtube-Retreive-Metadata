@@ -18,7 +18,7 @@ function fetchVideoData(VIDEO_ID) {
       if (data.items && data.items.length > 0) {
         resolve(data.items[0]);
       } else {
-        reject("Video not found");
+        reject(`Video not found ${VIDEO_ID}`);
       }
     });
   });
@@ -93,7 +93,9 @@ function createXLSX(videoDataList) {
 
   const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
-  ws["!cols"] = header.map(() => ({ width: 20 }));
+  ws["!cols"] = header.map(() => ({ 
+    width: 20, 
+  }));
 
   XLSX.utils.book_append_sheet(wb, ws, ws_name);
   XLSX.writeFile(wb, `youtube-videos-data.xlsx`);
