@@ -1,0 +1,25 @@
+{
+  "name": "get_youtube_video_metadonnee",
+  "version": "1.0.0",
+  "description": "This shortcode can help you getting metadata from one or few youtube videos",
+  "main": "get-datas-in-col.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jstnate/Youtube-Retreive-Metadata.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jstnate/Youtube-Retreive-Metadata/issues"
+  },
+  "type": "module",
+  "homepage": "https://github.com/jstnate/Youtube-Retreive-Metadata#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2"
+  }
+}

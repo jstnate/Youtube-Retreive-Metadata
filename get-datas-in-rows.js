@@ -1,8 +1,10 @@
-const API_KEY = "AIzaSyAGIJpkJ2Q0OEgZcOIA-nDnDYsOqYNWygA";
+import 'dotenv/config';
+
+const API_KEY = `${process.env.API_KEY}`;
 const VIDEO_IDS_INPUT = document.getElementById("video-ids");
 const START_SCRIPT = document.getElementById("start-script");
 
-const PASSWORD = "ViveLaSacem+1851";
+const PASSWORD = `${process.env.PASSWORD}`;
 const PASSWORD_INPUT = document.getElementById("password");
 const CHECK_PASSWORD = document.getElementById("submit-password");
 
@@ -10,19 +12,23 @@ const passwordBox = document.getElementById("password-box");
 const mainBox = document.getElementById("main-box");
 const errorBox = document.getElementById("error-box");
 
-function fetchVideoData(VIDEO_ID) {
-  const API_URL = `https://www.googleapis.com/youtube/v3/videos?id=${VIDEO_ID}&part=snippet,statistics,contentDetails&key=${API_KEY}`;
+async function fetchVideoData(videoId) {
+  const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,statistics,contentDetails&key=${API_KEY}`;
 
-  return new Promise((resolve, reject) => {
-    $.getJSON(API_URL, (data) => {
-      if (data.items && data.items.length > 0) {
-        resolve(data.items[0]);
-      } else {
-        reject(`Video not found ${VIDEO_ID}`);
-      }
-    });
-  });
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    if (data.items && data.items.length > 0) {
+      return data.items[0];
+    } else {
+      throw new Error(`Video not found: ${videoId}`);
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
+
 
 function createXLSX(videoDataList) {
   const ws_name = "YouTube Video Data";
