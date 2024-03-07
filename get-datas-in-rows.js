@@ -9,6 +9,7 @@ const CHECK_PASSWORD = document.getElementById("submit-password");
 const passwordBox = document.getElementById("password-box");
 const mainBox = document.getElementById("main-box");
 const errorBox = document.getElementById("error-box");
+// mwGbAiWLOjw DkPjOnUr4M4 U9Cle3OsiHg FTtM3cW-FdA FTtM3cWFdA
 
 function fetchVideoData(VIDEO_ID) {
   const API_URL = `https://www.googleapis.com/youtube/v3/videos?id=${VIDEO_ID}&part=snippet,statistics,contentDetails&key=${API_KEY}`;
@@ -16,10 +17,12 @@ function fetchVideoData(VIDEO_ID) {
   return new Promise((resolve, reject) => {
     $.getJSON(API_URL, (data) => {
       if (data.items && data.items.length > 0) {
-        resolve(data.items[0]);
+        resolve({ videoId: VIDEO_ID, videoData: data.items[0] });
       } else {
-        reject(`Video not found ${VIDEO_ID}`);
+        resolve({ videoId: VIDEO_ID, videoData: null });
       }
+    }).fail(() => {
+      resolve({ videoId: VIDEO_ID, videoData: null });
     });
   });
 }
@@ -31,6 +34,7 @@ function createXLSX(videoDataList) {
 
   const header = [
     "Video ID",
+    "Success",
     "Title",
     "Description",
     "Channel ID",
@@ -41,60 +45,70 @@ function createXLSX(videoDataList) {
   ];
   ws_data.push(header);
 
-  videoDataList.forEach((videoData, index) => {
-    const publishedAt = videoData.snippet.publishedAt;
-    const dateObj = new Date(publishedAt);
-    const formattedDate = dateObj.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-    const formattedTime = dateObj.toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  videoDataList.forEach((videoDataObj) => {
+    const videoData = videoDataObj.videoData;
+    const videoId = videoDataObj.videoId;
+    let success = videoData ? "Yes" : "No";
 
-    const duration = videoData.contentDetails.duration;
-    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-    let hours = 0;
-    let minutes = 0;
-    let seconds = 0;
+    if (videoData) {
+      const publishedAt = videoData.snippet.publishedAt;
+      const dateObj = new Date(publishedAt);
+      const formattedDate = dateObj.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const formattedTime = dateObj.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
 
-    if (match) {
-      if (match[1]) {
-        hours = parseInt(match[1].slice(0, -1));
+      const duration = videoData.contentDetails.duration;
+      const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+      let hours = 0;
+      let minutes = 0;
+      let seconds = 0;
+
+      if (match) {
+        if (match[1]) {
+          hours = parseInt(match[1].slice(0, -1));
+        }
+        if (match[2]) {
+          minutes = parseInt(match[2].slice(0, -1));
+        }
+        if (match[3]) {
+          seconds = parseInt(match[3].slice(0, -1));
+        }
       }
-      if (match[2]) {
-        minutes = parseInt(match[2].slice(0, -1));
-      }
-      if (match[3]) {
-        seconds = parseInt(match[3].slice(0, -1));
-      }
+
+      const formattedDuration = `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+      const data = [
+        videoId,
+        success,
+        videoData.snippet.title,
+        videoData.snippet.description,
+        videoData.snippet.channelId,
+        videoData.snippet.channelTitle,
+        formattedDate + " " + formattedTime,
+        formattedDuration,
+        videoData.statistics.viewCount,
+      ];
+
+      ws_data.push(data);
+    } else {
+      // If videoData is null, fill the rest of the row with empty strings
+      ws_data.push([videoId, success, "", "", "", "", "", "", ""]);
     }
-
-    const formattedDuration = `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-    const data = [
-      videoData.id,
-      videoData.snippet.title,
-      videoData.snippet.description,
-      videoData.snippet.channelId,
-      videoData.snippet.channelTitle,
-      formattedDate + " " + formattedTime,
-      formattedDuration,
-      videoData.statistics.viewCount,
-    ];
-
-    ws_data.push(data);
   });
 
   const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
-  ws["!cols"] = header.map(() => ({ 
-    width: 20, 
+  ws["!cols"] = header.map(() => ({
+    width: 20,
   }));
 
   XLSX.utils.book_append_sheet(wb, ws, ws_name);
